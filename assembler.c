@@ -1,0 +1,1 @@
+void dummy_function_in_assembler() {}

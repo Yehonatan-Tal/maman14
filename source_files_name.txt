@@ -1,0 +1,20 @@
+assembler.c:
+    ◦ Purpose: This file will contain the program's primary main function. Its main role is to manage the overall program flow, handle command-line input, initiate the different assembly stages (pre-assembler, first pass, second pass), and ensure the creation of the appropriate output files.
+• pre_assembler.h and pre_assembler.c:
+    ◦ Purpose: This module is responsible for the "pre-assembler" stage. Its primary role is to handle the expansion of macros from the initial source file and generate the "extended source file" (.am file). It will include the logic for identifying and expanding macros according to the defined rules.
+• first_pass.h and first_pass.c:
+    ◦ Purpose: This module will handle the first pass over the extended source code. Its central purpose is to build the symbol table in memory, determine the memory address associated with each symbol (label), and begin encoding the first words of instructions and all data (derived from .data, .string, .mat directives).
+• second_pass.h and second_pass.c:
+    ◦ Purpose: This module will handle the second pass over the extended source code. Its role is to complete the encoding of the machine code for operands that use symbols (labels) whose values became known in the first pass. Upon completion of this pass, the program's machine code will be fully translated.
+• symbol_table.h and symbol_table.c:
+    ◦ Purpose: This module will be responsible for managing the symbol table. It will provide functions for adding new symbols, searching for existing symbols, and updating their values and attributes (such as code, data, entry, external).
+• error_handler.h and error_handler.c:
+    ◦ Purpose: This module will manage error handling in the project. It will provide functions for reporting errors, printing detailed error messages to standard output (including line number), and ensuring that the assembler continues scanning the input to detect additional errors instead of stopping at the first one.
+• parser.h and parser.c / syntax_analyzer.h and syntax_analyzer.c:
+    ◦ Purpose: This module will handle the syntactic analysis of assembly code lines. It will interpret the type of statement (instruction, directive, comment, empty), identify operation names, operands, and their addressing methods, and prepare the information for encoding.
+• memory_manager.h and memory_manager.c:
+    ◦ Purpose: This module will be responsible for managing the assembler's memory. It will handle memory allocation for the instruction code image and the data image, and use the IC (Instruction Counter) and DC (Data Counter) to track the current addresses in the various memory areas.
+• utils.h and utils.c / helpers.h and helpers.c:
+    ◦ Purpose: This module will contain basic and general utility functions that do not specifically belong to another module, such as string processing functions, base conversions (e.g., to "unique base 4"), or various helper checks.
+• definitions.h / constants.h / types.h:
+    ◦ Purpose: This header file will contain general definitions, constants, and data structures to be used throughout the project. For example, definitions of opcodes, legal addressing methods, struct definitions for symbols or instructions, and complex types defined using typedef.

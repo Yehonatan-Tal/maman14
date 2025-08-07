@@ -1,0 +1,58 @@
+
+Project Title: Assembler for an Imaginary Machine
+Overview: This project involves developing an assembler written in the C programming language. The core purpose of this assembler is to translate source code written in a specially defined assembly language for a hypothetical CPU architecture into its equivalent binary machine code. This machine code can then be executed by our imaginary machine.
+Background and Purpose: Computers fundamentally understand only binary machine code. While powerful, this low-level language is difficult for humans to write and read directly. Assembly languages provide a more human-readable, symbolic representation of these machine instructions, making programming easier. An assembler serves as a crucial bridge, converting these symbolic instructions into the binary format that the machine can execute. It's important to note that this project focuses exclusively on the assembly process itself; the subsequent linking and loading phases of a program are outside the scope of this implementation.
+Key Project Goals:
+•	To gain practical experience in building a substantial software project, simulating a common system programming tool.
+•	To implement a two-pass assembly process, essential for correctly resolving all symbolic references and generating complete, executable machine code.
+•	To effectively manage and utilize various data structures, including a comprehensive symbol table and distinct memory images for code and data.
+•	To produce specific output files in predefined formats for the machine code and symbol information.
+Main Project Phases and Components: The assembler's operation is logically divided into several key modules:
+1.	Pre-assembler:
+o	This is the initial stage, tasked with handling macro expansion.
+o	It reads the original assembly source file, identifies both macro definitions (.mcro and .mcroend) and calls to these macros.
+o	The output is an "expanded" source file (with a .am extension) where all macro calls have been replaced by their respective code bodies.
+o	Important limitation: Nested macros are not supported.
+2.	First Pass:
+o	The primary goal of this pass is to build the complete symbol table. It identifies all labels (symbols) defined in the source code and assigns them their corresponding memory addresses (Instruction Counter - IC, or Data Counter - DC).
+o	It also performs a partial encoding of the machine code. The first words of instructions and all data directives (.data, .string, .mat) are fully encoded and stored in the respective memory image arrays.
+o	Symbolic references that are not yet defined (e.g., a jump to a label appearing later in the code) are left incomplete, to be resolved in the second pass.
+o	The Instruction Counter (IC) and Data Counter (DC) are meticulously updated to track the current memory locations for code and data respectively.
+3.	Second Pass:
+o	This pass is dedicated to completing the machine code encoding.
+o	It rereads the expanded source file and, using the now fully populated symbol table from the first pass, resolves all previously undefined symbolic references within the instruction words.
+o	It also processes .entry directives to identify entry points for external linkage.
+o	Upon successful completion, this pass prepares all data required for the final output files.
+4.	Data Structures:
+o	Symbol Table: Stores information about all labels, including their name, assigned memory address, and attributes (e.g., code, data, entry, external).
+o	Instruction Counter (IC) and Data Counter (DC): Counters that track the current memory address for code and data segments, respectively.
+o	Code Image Array: Stores the binary representation of machine instructions.
+o	Data Image Array: Stores the binary representation of data defined by .data, .string, and .mat directives.
+o	Constant Tables: Internal tables mapping opcodes to their binary values and defining valid addressing modes for each operation.
+5.	Error Management:
+o	The assembler must implement a robust error detection mechanism. It should identify and report syntactic errors such as undefined operations, incorrect number/type of operands, invalid register names, or symbols defined multiple times.
+o	For every detected error, a clear and descriptive error message must be printed to standard output, including the line number where the error occurred.
+o	A critical requirement: the assembler must not halt upon discovering the first error. It should continue processing the input file to identify all possible errors.
+o	If any errors are detected during the assembly process, no output files (e.g., .ob, .ent, .ext) should be generated.
+Imaginary Machine Architecture (Key Details):
+•	CPU: Features a Central Processing Unit (CPU) with 8 general-purpose registers (named r0 through r7), and a Program Status Word (PSW) register for status flags.
+•	Memory: Consists of 256 addressable memory cells. Each cell is a 10-bit word. Character data is represented using ASCII codes, and all arithmetic operations are performed using 2's complement for signed integers.
+•	Machine Instruction Format: Instructions are composed of an opcode and an optional number of operands (0 to 2). Each instruction typically translates into 1 to 5 consecutive 10-bit memory words. The first word of every instruction has a consistent structure, including fields for the opcode, source and destination operand addressing modes, and two crucial A,R,E bits.
+•	Addressing Modes: Our assembly language supports four distinct addressing modes (numbered 0-3): Immediate, Direct, Matrix Access, and Direct Register. Some addressing modes require additional "information words" to fully specify the operand.
+•	A,R,E Bits: These two bits (Absolute, Relocatable, External) embedded within each instruction word are vital for the subsequent linking and loading phases. They inform the loader whether the instruction's address needs adjustment when loaded into different memory locations. Note: These bits are only present in instruction words, not data words.
+Input and Output Files: The assembler accepts one or more assembly source files (expected to have a .as extension, though not typed during execution) as command-line arguments. For each input file, it generates specific output files:
+•	.am file: Contains the source code after the pre-assembler phase (macro expansion).
+•	.ob file (Object File): Contains the final binary machine code, encompassing both the instruction and data segments. The first line of this file indicates the total lengths of the code and data segments. All addresses and word contents are represented in a unique base-4 encoding using characters 'a', 'b', 'c', 'd'.
+•	.ent file (Entries File): Lists all symbols that were explicitly declared as program entry points using the .entry directive, along with their final memory addresses. This file is only generated if .entry directives are present in the source file.
+•	.ext file (Externals File): Lists all occurrences (memory addresses) within the generated machine code that refer to an external symbol (declared using the .extern directive). For each reference, it specifies the external symbol's name and the address where it's referenced. This file is only generated if .extern directives are present in the source file.
+Development Requirements and Best Practices:
+•	Programming Language: The project must be developed entirely in C language.
+•	Compilation: The code must compile successfully using the gcc compiler with the flags -Wall -ansi -pedantic. No compilation warnings are permitted.
+•	Modularity: The program should be highly modular. This means dividing the code into multiple C source (.c) and header (.h) files, logically separated by function (e.g., distinct modules for pre-assembler, first pass, second pass, error handling, etc.). Functions should be kept small, focused, and clearly defined.
+•	Code Quality: Emphasize clear, readable, and well-structured code. Use consistent indentation, meaningful names for all variables and functions, and avoid "magic numbers" by defining constants with descriptive names.
+•	Documentation: Comprehensive and clear documentation is mandatory within the source code. This includes high-level descriptions at the beginning of each file, detailed comments for every function (purpose, parameters, return values), and explanations for significant variables and complex logic.
+•	External Libraries: No external libraries are allowed beyond the standard C libraries.
+•	User Interface: The assembler must operate solely through command-line arguments for input file specification. No interactive menus, graphical user interfaces (GUIs), or other interactive elements should be implemented.
+•	Testing: Thorough testing is crucial. Provide diverse input files, including both valid and invalid assembly code, and examples that utilize macros.
+•	Input Handling: The assembler should correctly process input source code, including handling varying amounts of whitespace and tabs between elements. Each line in the source file has a maximum length of 80 characters (excluding the newline character).
+This general overview serves as a foundational understanding of the project's scope, objectives, and constraints before delving into the more granular technical specifications.
